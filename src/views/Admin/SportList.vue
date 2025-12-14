@@ -18,11 +18,11 @@
             </div>
             <div class="margin-top-sm">
                 <el-form :inline="true" :model="searchForm" size="default">
-                    <el-form-item label="介绍" prop="Content">
-                        <el-input v-model.trim="searchForm.Content"  placeholder="请输入介绍"  :clearable="true" ></el-input>
-                    </el-form-item>
                     <el-form-item label="运动名称" prop="Name">
                         <el-input v-model.trim="searchForm.Name"  placeholder="请输入运动名称"  :clearable="true" ></el-input>
+                    </el-form-item>
+                    <el-form-item label="介绍" prop="Content">
+                        <el-input v-model.trim="searchForm.Content"  placeholder="请输入介绍"  :clearable="true" ></el-input>
                     </el-form-item>
                 </el-form>
             </div>
@@ -35,17 +35,19 @@
               <el-row :gutter="10" class="edit-from-body">
 
                     <el-col :span="24">
-                        <el-form-item label="介绍" prop="Content">
-                            <el-input type="text" v-model="formData.Content"  placeholder="请输入介绍"     :clearable="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-
-
-                    <el-col :span="24">
                         <el-form-item label="运动名称" prop="Name">
                             <el-input type="text" v-model="formData.Name"  placeholder="请输入运动名称"     :clearable="true"></el-input>
                         </el-form-item>
                     </el-col>
+
+
+
+                    <el-col :span="24">
+                        <el-form-item label="介绍" prop="Content">
+                            <el-input type="text" v-model="formData.Content"  placeholder="请输入介绍"     :clearable="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    
 
 
                     <el-col :span="24">
@@ -141,14 +143,14 @@ const columnList = ref([
 
   },
   {
-    key: "Content",
-    title: "介绍",
+    key: "Name",
+    title: "运动名称",
     
     type: ColumnType.SHORTTEXT, 
   },
   {
-    key: "Name",
-    title: "运动名称",
+    key: "Content",
+    title: "介绍",
     
     type: ColumnType.SHORTTEXT, 
   },
