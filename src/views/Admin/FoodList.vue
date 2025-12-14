@@ -44,12 +44,6 @@
 
 
                     <el-col :span="24">
-                        <el-form-item label="封面" prop="Cover">
-                           <UploadImages :limit="1" v-model="formData.Cover"></UploadImages>
-                        </el-form-item>
-                    </el-col>
-
-                    <el-col :span="24">
                         <el-form-item label="食物类型" prop="FoodTypeId">
                           <SigleSelect url="/FoodType/List" columnName="Name" columnValue="Id"  v-model="formData.FoodTypeId" >
                           </SigleSelect>
@@ -57,26 +51,32 @@
                     </el-col>
 
                     <el-col :span="24">
+                        <el-form-item label="封面" prop="Cover">
+                           <UploadImages :limit="1" v-model="formData.Cover"></UploadImages>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="24">
                         <el-form-item label="热量" prop="Calories">
-                            <el-input-number  v-model="formData.Calories"  placeholder="请输入热量"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
+                            <el-input-number  v-model="formData.Calories"  placeholder="请输入热量"     :clearable="true"    :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
                         <el-form-item label="蛋白质" prop="Protein">
-                            <el-input-number  v-model="formData.Protein"  placeholder="请输入蛋白质"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
+                            <el-input-number  v-model="formData.Protein"  placeholder="请输入蛋白质"     :clearable="true"    :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
                         <el-form-item label="糖水化合物" prop="Carbohydrates">
-                            <el-input-number  v-model="formData.Carbohydrates"  placeholder="请输入糖水化合物"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
+                            <el-input-number  v-model="formData.Carbohydrates"  placeholder="请输入糖水化合物"     :clearable="true"    :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
                         <el-form-item label="脂肪" prop="Fat">
-                            <el-input-number  v-model="formData.Fat"  placeholder="请输入脂肪"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
+                            <el-input-number  v-model="formData.Fat"  placeholder="请输入脂肪"     :clearable="true"    :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -94,7 +94,7 @@
 
 
         <!-- 数据表格 -->
-        <PaginationTable ref="PaginationTableId" url="/Food/List" :column="columnList" :where="where">
+        <PaginationTable ref="PaginationTableId" url="/Food/List" :column="columnList">
             <template v-slot:header>
                 <el-button type="primary" size="default" @click="ShowEditModal()">
                     <el-icon>
@@ -144,9 +144,7 @@ const Token = computed(() => commonStore.Token)
 const UserInfo = computed(() => commonStore.UserInfo)
 const RoleType = computed(() => commonStore.RoleType)
 const UserId = computed(() => commonStore.UserId)
-  
-//表格条件
-const where = reactive({});
+
 // 搜索表单数据
 const searchForm = reactive({});
 
@@ -169,7 +167,8 @@ const columnList = ref([
   {
     key: "Name",
     title: "食物名称",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
@@ -184,31 +183,36 @@ const columnList = ref([
   {
     key: "FoodTypeDto.Name",
     title: "分类名称",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
     key: "Calories",
     title: "热量",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
     key: "Protein",
     title: "蛋白质",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
     key: "Carbohydrates",
     title: "糖水化合物",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
     key: "Fat",
     title: "脂肪",
-    
+    width: "160px",
+        
     type: ColumnType.SHORTTEXT, 
   },
   {
@@ -224,10 +228,10 @@ const editModalFormRules = reactive({
 "Name":[
 { required: true, message: '该项为必填项', trigger: 'blur' },
               ],           
-"Cover":[
+"FoodTypeId":[
 { required: true, message: '该项为必填项', trigger: 'blur' },
               ],           
-"FoodTypeId":[
+"Cover":[
 { required: true, message: '该项为必填项', trigger: 'blur' },
               ],           
 "Calories":[
@@ -293,7 +297,7 @@ const ResetClick = () => {
 const ShowDeleteModal = async (Id) => {
 
     try {
-        await ElMessageBox.confirm('确认删除该信息吗？', '提示', {
+        await ElMessageBox.confirm('确认删除该测试信息吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'

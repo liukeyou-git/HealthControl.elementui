@@ -19,42 +19,44 @@
             <div class="margin-top-sm">
                 <el-form :inline="true" :model="searchForm" size="default">
                     <el-form-item label="单位名称" prop="UnitName">
-                        <el-input v-model.trim="searchForm.UnitName"  placeholder="请输入单位名称"  :clearable="true" ></el-input>
+                        <el-input v-model.trim="searchForm.UnitName" placeholder="请输入单位名称" :clearable="true"></el-input>
                     </el-form-item>
                     <el-form-item label="食物">
-                        <SigleSelect url="/Food/List" class="search-input" columnName="Name" :clearable="true" columnValue="Id"
-                            v-model="searchForm.FoodId">
+                        <SigleSelect url="/Food/List" class="search-input" columnName="Name" :clearable="true"
+                            columnValue="Id" v-model="searchForm.FoodId">
                         </SigleSelect>
-                    </el-form-item>                
+                    </el-form-item>
                 </el-form>
             </div>
         </el-card>
-<!-- 编辑对话框 -->
+        <!-- 编辑对话框 -->
         <el-dialog :title="formData.Id ? '修改食物单位' : '添加食物单位'" v-model="editorShow" width="50%" :lock-scroll="true"
             min-height="500px">
             <el-form v-if="editorShow" ref="editModalForm" :rules="editModalFormRules" :model="formData" label-width="140px"
-                size="default">             
-              <el-row :gutter="10" class="edit-from-body">
+                size="default">
+                <el-row :gutter="10" class="edit-from-body">
 
                     <el-col :span="24">
                         <el-form-item label="食物" prop="FoodId">
-                          <SigleSelect url="/Food/List" columnName="Name" columnValue="Id"  v-model="formData.FoodId" >
-                          </SigleSelect>
+                            <SigleSelect url="/Food/List" columnName="Name" columnValue="Id" v-model="formData.FoodId">
+                            </SigleSelect>
                         </el-form-item>
                     </el-col>
+
 
                     <el-col :span="24">
                         <el-form-item label="单位名称" prop="UnitName">
-                            <el-input type="text" v-model="formData.UnitName"  placeholder="请输入单位名称"     :clearable="true"></el-input>
+                            <el-input type="text" v-model="formData.UnitName" placeholder="请输入单位名称"
+                                :clearable="true"></el-input>
                         </el-form-item>
                     </el-col>
-
-
                     <el-col :span="24">
                         <el-form-item label="单位值" prop="UnitValue">
-                            <el-input-number  v-model="formData.UnitValue"  placeholder="请输入单位值"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
+                            <el-input-number v-model="formData.UnitValue" placeholder="请输入单位值（对应的克数）" :clearable="true"
+                                :min="1" :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
+
                 </el-row>
 
                 <el-row type="flex" justify="end" align="bottom">
@@ -70,7 +72,7 @@
 
 
         <!-- 数据表格 -->
-        <PaginationTable ref="PaginationTableId" url="/FoodUnit/List" :column="columnList" :where="where">
+        <PaginationTable ref="PaginationTableId" url="/FoodUnit/List" :column="columnList">
             <template v-slot:header>
                 <el-button type="primary" size="default" @click="ShowEditModal()">
                     <el-icon>
@@ -84,7 +86,7 @@
                 </el-button>
             </template>
             <template v-slot:Operate="scope">
-              <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
+                <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
                     <el-icon>
                         <Edit />
                     </el-icon>修 改
@@ -96,20 +98,20 @@
                 </el-button>
             </template>
         </PaginationTable>
-        
-              
-              
+
+
+
     </div>
 </template>
 
 <script setup>
-import { Post,PostSingleUpdate } from '@/api/http';
+import { Post, PostSingleUpdate } from '@/api/http';
 import { ColumnType } from '@/components/Tables/columnTypes';
 import { useCommonStore } from "@/store";
 
 import { Delete, Edit, Refresh, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import {onMounted,onBeforeMount,nextTick, watch,computed, reactive, ref } from 'vue';
+import { onMounted, onBeforeMount, nextTick, watch, computed, reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -120,9 +122,8 @@ const Token = computed(() => commonStore.Token)
 const UserInfo = computed(() => commonStore.UserInfo)
 const RoleType = computed(() => commonStore.RoleType)
 const UserId = computed(() => commonStore.UserId)
-  
-//表格条件
-const where = reactive({});
+
+
 // 搜索表单数据
 const searchForm = reactive({});
 
@@ -137,53 +138,104 @@ const editModalForm = ref(null);
 
 // 表格列配置
 const columnList = ref([
-  {
-    key: "Id",
-    hidden: true,
+    {
+        key: "Id",
+        hidden: true,
 
-  },
-  {
-    key: "FoodId",
-    hidden: true, 
-  },
-  {
-    key: "FoodDto.Name",
-    title: "食物名称",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "UnitName",
-    title: "单位名称",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "UnitValue",
-    title: "单位值",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    title: "操作",
-    width:"300px",
-    key: "Operate",
-    type: ColumnType.USERDEFINED,
-  },
-            ]);
+    },
+    {
+        key: "FoodId",
+        hidden: true,
+    },
+    {
+        key: "FoodDto",
+        title: "食物",
+        hidden: true,
+    },
+    {
+        key: "FoodDto.Name",
+        title: "食物名称",
+
+        type: ColumnType.SHORTTEXT,
+    }, {
+        key: "FoodDto.Cover",
+        title: "食物名称",
+
+        type: ColumnType.IMAGES,
+    },
+    {
+        key: "UnitName",
+        title: "单位名称",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        key: "UnitValue",
+        title: "单位值(对应克)",
+
+        type: ColumnType.SHORTTEXT,
+
+    },
+    {
+        key: "Calories",
+        title: "热量",
+        width: "160px",
+
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            return window.ToFixed3(row.FoodDto.Calories * row.UnitValue);
+        }
+    },
+    {
+        key: "Protein",
+        title: "蛋白质",
+        width: "160px",
+
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            return window.ToFixed3(row.FoodDto.Protein * row.UnitValue);
+        }
+    },
+    {
+        key: "Carbohydrates",
+        title: "糖水化合物",
+        width: "160px",
+
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            return window.ToFixed3(row.FoodDto.Carbohydrates * row.UnitValue);
+        }
+    },
+    {
+        key: "Fat",
+        title: "脂肪",
+        width: "160px",
+
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            return window.ToFixed3(row.FoodDto.Fat * row.UnitValue);
+        }
+    },
+    {
+        title: "操作",
+        width: "300px",
+        key: "Operate",
+        type: ColumnType.USERDEFINED,
+    },
+]);
 
 // 表单验证规则
 const editModalFormRules = reactive({
-"FoodId":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"UnitName":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"UnitValue":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
- });
+    "FoodId": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "UnitValue": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "UnitName": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+});
 
 
 // 表格引用
@@ -193,7 +245,7 @@ const PaginationTableId = ref(null);
 const ShowEditModal = async (Id) => {
 
     const { Data } = await Post(`/FoodUnit/Get`, { Id: Id });
-    
+
     Object.assign(formData, Data);
 
     editorShow.value = true;
@@ -234,7 +286,7 @@ const ResetClick = () => {
 const ShowDeleteModal = async (Id) => {
 
     try {
-        await ElMessageBox.confirm('确认删除该信息吗？', '提示', {
+        await ElMessageBox.confirm('确认删除该测试信息吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -277,10 +329,8 @@ const BatchDelete = async () => {
     }
 };
 onBeforeMount(() => {
-   
+
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
