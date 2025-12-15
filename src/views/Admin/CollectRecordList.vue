@@ -18,43 +18,49 @@
             </div>
             <div class="margin-top-sm">
                 <el-form :inline="true" :model="searchForm" size="default">
-                    <el-form-item label="收藏类型" prop="CollectType">
-                        <el-input v-model.trim="searchForm.CollectType"  placeholder="请输入收藏类型"  :clearable="true" ></el-input>
+                    <el-form-item label="收藏类型" prop="CollectType" class="search-input">
+                        <el-select v-model="searchForm.CollectType" placeholder="请选择收藏类型" :clearable="true">
+                            <el-option label="健康知识" value="健康知识"></el-option>
+                            <el-option label="食谱" value="食谱"></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item label="收藏人">
-                        <SigleSelect url="/User/List" class="search-input" columnName="Name" :clearable="true" columnValue="Id"
-                            v-model="searchForm.CollectUserId">
+                        <SigleSelect url="/User/List" class="search-input" columnName="Name" :clearable="true"
+                            columnValue="Id" v-model="searchForm.CollectUserId">
                         </SigleSelect>
-                    </el-form-item>                
+                    </el-form-item>
                 </el-form>
             </div>
         </el-card>
-<!-- 编辑对话框 -->
+        <!-- 编辑对话框 -->
         <el-dialog :title="formData.Id ? '修改收藏记录' : '添加收藏记录'" v-model="editorShow" width="50%" :lock-scroll="true"
             min-height="500px">
             <el-form v-if="editorShow" ref="editModalForm" :rules="editModalFormRules" :model="formData" label-width="140px"
-                size="default">             
-              <el-row :gutter="10" class="edit-from-body">
+                size="default">
+                <el-row :gutter="10" class="edit-from-body">
 
                     <el-col :span="24">
                         <el-form-item label="收藏人" prop="CollectUserId">
-                          <SigleSelect url="/User/List" columnName="Name" columnValue="Id"  v-model="formData.CollectUserId" >
-                          </SigleSelect>
+                            <SigleSelect url="/User/List" columnName="Name" columnValue="Id"
+                                v-model="formData.CollectUserId">
+                            </SigleSelect>
+                        </el-form-item>
+                    </el-col>
+
+                    <el-col :span="24">
+                        <el-form-item label="关联资源Id" prop="RelativeId">
+                            <el-input-number v-model="formData.RelativeId" placeholder="请输入关联资源Id" :clearable="true"
+                                :min="1" :max="1000000"></el-input-number>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
                         <el-form-item label="收藏类型" prop="CollectType">
-                            <el-input type="text" v-model="formData.CollectType"  placeholder="请输入收藏类型"     :clearable="true"></el-input>
+                            <el-input type="text" v-model="formData.CollectType" placeholder="请输入收藏类型"
+                                :clearable="true"></el-input>
                         </el-form-item>
                     </el-col>
 
-
-                    <el-col :span="24">
-                        <el-form-item label="关联资源" prop="RelativeId">
-                            <el-input-number  v-model="formData.RelativeId"  placeholder="请输入关联资源"     :clearable="true"  :min="1" :max="1000000"></el-input-number>
-                        </el-form-item>
-                    </el-col>
                 </el-row>
 
                 <el-row type="flex" justify="end" align="bottom">
@@ -70,13 +76,13 @@
 
 
         <!-- 数据表格 -->
-        <PaginationTable ref="PaginationTableId" url="/CollectRecord/List" :column="columnList" :where="where">
+        <PaginationTable ref="PaginationTableId" url="/CollectRecord/List" :column="columnList">
             <template v-slot:header>
-                <el-button type="primary" size="default" @click="ShowEditModal()">
+                <!-- <el-button type="primary" size="default" @click="ShowEditModal()">
                     <el-icon>
                         <Edit />
                     </el-icon>新 增
-                </el-button>
+                </el-button> -->
                 <el-button type="danger" size="default" @click="BatchDelete">
                     <el-icon>
                         <Delete />
@@ -84,11 +90,11 @@
                 </el-button>
             </template>
             <template v-slot:Operate="scope">
-              <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
+                <!-- <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
                     <el-icon>
                         <Edit />
                     </el-icon>修 改
-                </el-button>
+                </el-button> -->
                 <el-button type="danger" size="default" class="margin-top-xs" @click="ShowDeleteModal(scope.row.Id)">
                     <el-icon>
                         <Delete />
@@ -96,20 +102,20 @@
                 </el-button>
             </template>
         </PaginationTable>
-        
-              
-              
+
+
+
     </div>
 </template>
 
 <script setup>
-import { Post,PostSingleUpdate } from '@/api/http';
+import { Post, PostSingleUpdate } from '@/api/http';
 import { ColumnType } from '@/components/Tables/columnTypes';
 import { useCommonStore } from "@/store";
 
 import { Delete, Edit, Refresh, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import {onMounted,onBeforeMount,nextTick, watch,computed, reactive, ref } from 'vue';
+import { onMounted, onBeforeMount, nextTick, watch, computed, reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -120,9 +126,7 @@ const Token = computed(() => commonStore.Token)
 const UserInfo = computed(() => commonStore.UserInfo)
 const RoleType = computed(() => commonStore.RoleType)
 const UserId = computed(() => commonStore.UserId)
-  
-//表格条件
-const where = reactive({});
+
 // 搜索表单数据
 const searchForm = reactive({});
 
@@ -137,53 +141,80 @@ const editModalForm = ref(null);
 
 // 表格列配置
 const columnList = ref([
-  {
-    key: "Id",
-    hidden: true,
+    {
+        key: "Id",
+        hidden: true,
 
-  },
-  {
-    key: "CollectUserId",
-    hidden: true, 
-  },
-  {
-    key: "CollectUserDto.Name",
-    title: "名称",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "CollectType",
-    title: "收藏类型",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "RelativeId",
-    title: "关联资源",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    title: "操作",
-    width:"300px",
-    key: "Operate",
-    type: ColumnType.USERDEFINED,
-  },
-            ]);
+    },
+    {
+        key: "CollectUserId",
+        hidden: true,
+    },
+    {
+        key: "CollectUserDto.Name",
+        title: "收藏人",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        key: "CollectType",
+        title: "收藏类型",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        key: "RelativeObject",
+        title: "关联资源",
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            if (row.CollectType == "健康知识") {
+                return row.HealthArticleDto.Title;
+            }
+            else if (row.CollectType == "食谱") {
+                return row.RecipeDto.Title;
+            }
+
+        },
+    }, {
+        key: "RelativeObjectCover",
+        title: "关联资源封面",
+        type: ColumnType.IMAGES,
+        template: function (row) {
+            if (row.CollectType == "健康知识") {
+                return row.HealthArticleDto.Cover;
+            }
+            else if (row.CollectType == "食谱") {
+                return row.RecipeDto.Cover;
+            }
+
+        },
+    },
+    {
+        key: "RelativeId",
+        title: "关联资源Id",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        title: "操作",
+        width: "300px",
+        key: "Operate",
+        type: ColumnType.USERDEFINED,
+    },
+]);
 
 // 表单验证规则
 const editModalFormRules = reactive({
-"CollectUserId":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"CollectType":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"RelativeId":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
- });
+    "CollectUserId": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "RelativeId": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "CollectType": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+});
 
 
 // 表格引用
@@ -193,7 +224,7 @@ const PaginationTableId = ref(null);
 const ShowEditModal = async (Id) => {
 
     const { Data } = await Post(`/CollectRecord/Get`, { Id: Id });
-    
+
     Object.assign(formData, Data);
 
     editorShow.value = true;
@@ -234,7 +265,7 @@ const ResetClick = () => {
 const ShowDeleteModal = async (Id) => {
 
     try {
-        await ElMessageBox.confirm('确认删除该信息吗？', '提示', {
+        await ElMessageBox.confirm('确认删除该测试信息吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -277,10 +308,8 @@ const BatchDelete = async () => {
     }
 };
 onBeforeMount(() => {
-   
+
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

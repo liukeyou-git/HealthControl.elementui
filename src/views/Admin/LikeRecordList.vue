@@ -18,44 +18,49 @@
             </div>
             <div class="margin-top-sm">
                 <el-form :inline="true" :model="searchForm" size="default">
-                    <el-form-item label="点赞类型" prop="LikeType">
-                        <el-input v-model.trim="searchForm.LikeType"  placeholder="请输入点赞类型"  :clearable="true" ></el-input>
+                    <el-form-item label="点赞类型" prop="LikeType" class="search-input">
+                        <el-select v-model="searchForm.LikeType" placeholder="请选择点赞类型" :clearable="true">
+                            <el-option label="健康知识" value="健康知识"></el-option>
+                            <el-option label="食谱" value="食谱"></el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="关联" prop="RelativeId">
-                        <el-input v-model.trim="searchForm.RelativeId"  placeholder="请输入关联"  :clearable="true" ></el-input>
+                    <el-form-item label="关联Id" prop="RelativeId">
+                        <el-input v-model.trim="searchForm.RelativeId" placeholder="请输入关联Id" :clearable="true"></el-input>
                     </el-form-item>
                     <el-form-item label="点赞人">
-                        <SigleSelect url="/User/List" class="search-input" columnName="Name" :clearable="true" columnValue="Id"
-                            v-model="searchForm.LikeUserId">
+                        <SigleSelect url="/User/List" class="search-input" columnName="Name" :clearable="true"
+                            columnValue="Id" v-model="searchForm.LikeUserId">
                         </SigleSelect>
-                    </el-form-item>                
+                    </el-form-item>
                 </el-form>
             </div>
         </el-card>
-<!-- 编辑对话框 -->
+        <!-- 编辑对话框 -->
         <el-dialog :title="formData.Id ? '修改点赞记录' : '添加点赞记录'" v-model="editorShow" width="50%" :lock-scroll="true"
             min-height="500px">
             <el-form v-if="editorShow" ref="editModalForm" :rules="editModalFormRules" :model="formData" label-width="140px"
-                size="default">             
-              <el-row :gutter="10" class="edit-from-body">
+                size="default">
+                <el-row :gutter="10" class="edit-from-body">
 
                     <el-col :span="24">
                         <el-form-item label="点赞人" prop="LikeUserId">
-                          <SigleSelect url="/User/List" columnName="Name" columnValue="Id"  v-model="formData.LikeUserId" >
-                          </SigleSelect>
+                            <SigleSelect url="/User/List" columnName="Name" columnValue="Id" v-model="formData.LikeUserId">
+                            </SigleSelect>
                         </el-form-item>
                     </el-col>
 
                     <el-col :span="24">
                         <el-form-item label="点赞类型" prop="LikeType">
-                            <el-input type="text" v-model="formData.LikeType"  placeholder="请输入点赞类型"     :clearable="true"></el-input>
+                            <el-input type="text" v-model="formData.LikeType" placeholder="请输入点赞类型"
+                                :clearable="true"></el-input>
                         </el-form-item>
                     </el-col>
 
 
                     <el-col :span="24">
-                        <el-form-item label="关联" prop="RelativeId">
-                            <el-input type="text" v-model="formData.RelativeId"  placeholder="请输入关联"     :clearable="true"></el-input>
+                        <el-form-item label="关联Id" prop="RelativeId">
+                            <el-input type="text" v-model="formData.RelativeId" placeholder="请输入关联Id"
+                                :clearable="true"></el-input>
                         </el-form-item>
                     </el-col>
 
@@ -74,13 +79,13 @@
 
 
         <!-- 数据表格 -->
-        <PaginationTable ref="PaginationTableId" url="/LikeRecord/List" :column="columnList" :where="where">
+        <PaginationTable ref="PaginationTableId" url="/LikeRecord/List" :column="columnList">
             <template v-slot:header>
-                <el-button type="primary" size="default" @click="ShowEditModal()">
+                <!-- <el-button type="primary" size="default" @click="ShowEditModal()">
                     <el-icon>
                         <Edit />
                     </el-icon>新 增
-                </el-button>
+                </el-button> -->
                 <el-button type="danger" size="default" @click="BatchDelete">
                     <el-icon>
                         <Delete />
@@ -88,11 +93,11 @@
                 </el-button>
             </template>
             <template v-slot:Operate="scope">
-              <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
+                <!-- <el-button type="primary" size="default" class="margin-top-xs" @click="ShowEditModal(scope.row.Id)">
                     <el-icon>
                         <Edit />
                     </el-icon>修 改
-                </el-button>
+                </el-button> -->
                 <el-button type="danger" size="default" class="margin-top-xs" @click="ShowDeleteModal(scope.row.Id)">
                     <el-icon>
                         <Delete />
@@ -100,20 +105,20 @@
                 </el-button>
             </template>
         </PaginationTable>
-        
-              
-              
+
+
+
     </div>
 </template>
 
 <script setup>
-import { Post,PostSingleUpdate } from '@/api/http';
+import { Post, PostSingleUpdate } from '@/api/http';
 import { ColumnType } from '@/components/Tables/columnTypes';
 import { useCommonStore } from "@/store";
 
 import { Delete, Edit, Refresh, Search } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import {onMounted,onBeforeMount,nextTick, watch,computed, reactive, ref } from 'vue';
+import { onMounted, onBeforeMount, nextTick, watch, computed, reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -124,9 +129,7 @@ const Token = computed(() => commonStore.Token)
 const UserInfo = computed(() => commonStore.UserInfo)
 const RoleType = computed(() => commonStore.RoleType)
 const UserId = computed(() => commonStore.UserId)
-  
-//表格条件
-const where = reactive({});
+
 // 搜索表单数据
 const searchForm = reactive({});
 
@@ -141,53 +144,79 @@ const editModalForm = ref(null);
 
 // 表格列配置
 const columnList = ref([
-  {
-    key: "Id",
-    hidden: true,
+    {
+        key: "Id",
+        hidden: true,
 
-  },
-  {
-    key: "LikeUserId",
-    hidden: true, 
-  },
-  {
-    key: "LikeUserDto.Name",
-    title: "名称",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "LikeType",
-    title: "点赞类型",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    key: "RelativeId",
-    title: "关联",
-    
-    type: ColumnType.SHORTTEXT, 
-  },
-  {
-    title: "操作",
-    width:"300px",
-    key: "Operate",
-    type: ColumnType.USERDEFINED,
-  },
-            ]);
+    },
+    {
+        key: "LikeUserId",
+        hidden: true,
+    },
+    {
+        key: "LikeUserDto.Name",
+        title: "点赞人",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        key: "LikeType",
+        title: "点赞类型",
+
+        type: ColumnType.SHORTTEXT,
+    }, {
+        key: "RelativeObject",
+        title: "关联资源",
+        type: ColumnType.SHORTTEXT,
+        template: function (row) {
+            if (row.LikeType == "健康知识") {
+                return row.HealthArticleDto.Title;
+            }
+            else if (row.LikeType == "食谱") {
+                return row.RecipeDto.Title;
+            }
+
+        },
+    }, {
+        key: "RelativeObjectCover",
+        title: "关联资源封面",
+        type: ColumnType.IMAGES,
+        template: function (row) {
+            if (row.LikeType == "健康知识") {
+                return row.HealthArticleDto.Cover;
+            }
+            else if (row.LikeType == "食谱") {
+                return row.RecipeDto.Cover;
+            }
+
+        },
+    },
+    {
+        key: "RelativeId",
+        title: "关联Id",
+
+        type: ColumnType.SHORTTEXT,
+    },
+    {
+        title: "操作",
+        width: "300px",
+        key: "Operate",
+        type: ColumnType.USERDEFINED,
+    },
+]);
 
 // 表单验证规则
 const editModalFormRules = reactive({
-"LikeUserId":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"LikeType":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
-"RelativeId":[
-{ required: true, message: '该项为必填项', trigger: 'blur' },
-              ],           
- });
+    "LikeUserId": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "LikeType": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+    "RelativeId": [
+        { required: true, message: '该项为必填项', trigger: 'blur' },
+    ],
+});
 
 
 // 表格引用
@@ -197,7 +226,7 @@ const PaginationTableId = ref(null);
 const ShowEditModal = async (Id) => {
 
     const { Data } = await Post(`/LikeRecord/Get`, { Id: Id });
-    
+
     Object.assign(formData, Data);
 
     editorShow.value = true;
@@ -238,7 +267,7 @@ const ResetClick = () => {
 const ShowDeleteModal = async (Id) => {
 
     try {
-        await ElMessageBox.confirm('确认删除该信息吗？', '提示', {
+        await ElMessageBox.confirm('确认删除该测试信息吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -281,10 +310,8 @@ const BatchDelete = async () => {
     }
 };
 onBeforeMount(() => {
-   
+
 });
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
